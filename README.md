@@ -41,7 +41,7 @@ controller.deliverResponse("Here's my reply.")
 
 ## Requirements
 
-- iOS 17+ / macOS 14+
+- iOS 17+ (both modules currently require iOS — `VoiceLoopKit` depends on `Speech`/`AVAudioSession`, which don't exist on macOS)
 - Swift 5.9+
 
 ## Installation

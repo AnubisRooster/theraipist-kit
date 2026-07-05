@@ -5,7 +5,6 @@ let package = Package(
     name: "therAIpist-kit",
     platforms: [
         .iOS(.v17),
-        .macOS(.v14),
     ],
     products: [
         .library(name: "BYOKLLMKit", targets: ["BYOKLLMKit"]),
