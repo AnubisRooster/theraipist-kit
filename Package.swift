@@ -6,9 +6,6 @@ let package = Package(
     platforms: [
         .iOS(.v17),
     ],
-    dependencies: [
-        .package(url: "https://github.com/eastriverlee/LLM.swift", exact: "1.8.0"),
-    ],
     products: [
         .library(name: "BYOKLLMKit", targets: ["BYOKLLMKit"]),
         .library(name: "VoiceLoopKit", targets: ["VoiceLoopKit"]),
@@ -18,6 +15,9 @@ let package = Package(
         .library(name: "AgentRouteKit", targets: ["AgentRouteKit"]),
         .library(name: "GraphViewKit", targets: ["GraphViewKit"]),
         .library(name: "LocalLLMKit", targets: ["LocalLLMKit"]),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/eastriverlee/LLM.swift", exact: "1.8.0"),
     ],
     targets: [
         .target(name: "BYOKLLMKit"),
