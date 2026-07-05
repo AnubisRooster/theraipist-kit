@@ -19,10 +19,9 @@ jobs:
       #
       # Per-product schemes (BYOKLLMKit, VoiceLoopKit) only carry a build
       # action, not a test action, so tests run through the package's
-      # aggregate scheme instead. Logged here in case the name ever changes.
-      - name: List schemes
-        run: xcodebuild -list
+      # aggregate scheme instead (confirmed via `xcodebuild -list`:
+      # BYOKLLMKit, VoiceLoopKit, therAIpist-kit-Package).
       - name: Test
         run: >
-          xcodebuild test -scheme therAIpist-kit
+          xcodebuild test -scheme therAIpist-kit-Package
           -destination 'platform=iOS Simulator,name=iPhone 15'
