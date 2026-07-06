@@ -30,9 +30,12 @@ jobs:
   # story actually works — e.g. that PINLockKit really builds/tests without ever
   # touching LLM.swift, and that LocalLLMKit's local path dependency on
   # ../BYOKLLMKit resolves correctly outside the umbrella manifest.
+  #
+  # fail-fast: false so one module's failure doesn't hide the others' results.
   subpackage-native:
     runs-on: macos-14
     strategy:
+      fail-fast: false
       matrix:
         module: [BYOKLLMKit, PINLockKit, ContentSafetyKit, GraphKit, AgentRouteKit]
     steps:
@@ -46,14 +49,22 @@ jobs:
   subpackage-ios:
     runs-on: macos-14
     strategy:
+      fail-fast: false
       matrix:
         module: [VoiceLoopKit, GraphViewKit, LocalLLMKit]
     steps:
       - uses: actions/checkout@v4
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_15.4.app
+      # A standalone single-product package doesn't necessarily get a
+      # "<Name>-Package" aggregate scheme the way the multi-product umbrella
+      # does (confirmed: GraphViewKit's workspace has no such scheme) — list
+      # first so a wrong guess here is diagnosable without another round trip.
+      - name: List schemes
+        working-directory: Packages/${{ matrix.module }}
+        run: xcodebuild -list
       - name: Build and test ${{ matrix.module }} standalone
         working-directory: Packages/${{ matrix.module }}
         run: >
-          xcodebuild test -scheme ${{ matrix.module }}-Package
+          xcodebuild test -scheme ${{ matrix.module }}
           -destination 'platform=iOS Simulator,name=iPhone 15'
