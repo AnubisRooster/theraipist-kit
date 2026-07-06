@@ -150,7 +150,8 @@ public final class ElevenLabsTTSEngine: NSObject {
     private func startProgressTimer() {
         progressTimer?.invalidate()
         let timer = Timer(timeInterval: 1.0 / 30.0, repeats: true) { [weak self] _ in
-            Task { @MainActor in self?.tickProgress() }
+            guard let self else { return }
+            Task { @MainActor in self.tickProgress() }
         }
         RunLoop.main.add(timer, forMode: .common)
         progressTimer = timer
