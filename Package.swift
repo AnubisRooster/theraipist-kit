@@ -22,6 +22,7 @@ let package = Package(
         .library(name: "BYOKLLMKit", targets: ["BYOKLLMKit"]),
         .library(name: "VoiceLoopKit", targets: ["VoiceLoopKit"]),
         .library(name: "PINLockKit", targets: ["PINLockKit"]),
+        .library(name: "BiometricLockKit", targets: ["BiometricLockKit"]),
         .library(name: "ContentSafetyKit", targets: ["ContentSafetyKit"]),
         .library(name: "GraphKit", targets: ["GraphKit"]),
         .library(name: "AgentRouteKit", targets: ["AgentRouteKit"]),
@@ -44,6 +45,10 @@ let package = Package(
         .target(name: "PINLockKit", path: "Packages/PINLockKit/Sources/PINLockKit"),
         .testTarget(name: "PINLockKitTests", dependencies: ["PINLockKit"],
                    path: "Packages/PINLockKit/Tests/PINLockKitTests"),
+
+        .target(name: "BiometricLockKit", path: "Packages/BiometricLockKit/Sources/BiometricLockKit"),
+        .testTarget(name: "BiometricLockKitTests", dependencies: ["BiometricLockKit"],
+                   path: "Packages/BiometricLockKit/Tests/BiometricLockKitTests"),
 
         .target(name: "ContentSafetyKit", path: "Packages/ContentSafetyKit/Sources/ContentSafetyKit"),
         .testTarget(name: "ContentSafetyKitTests", dependencies: ["ContentSafetyKit"],

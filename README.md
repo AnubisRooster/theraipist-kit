@@ -82,6 +82,37 @@ case .lockedOut(let seconds): print("locked for \(seconds)s")
 }
 ```
 
+### BiometricLockKit
+
+A standalone Face ID / Touch ID / Optic ID unlock primitive over Apple's `LocalAuthentication`. It does **no** face matching itself — the camera, the neural match, and the biometric templates never leave the Secure Enclave; `BiometricService` only ever receives an opaque success/failure. Uses `.deviceOwnerAuthenticationWithBiometrics` (biometrics only, not the device passcode) so a failure routes to *your* fallback, plus a **domain-state anti-tamper check**: if someone enrolls a new face/finger in Settings, the next unlock returns `.biometryChanged` instead of `.success`.
+
+The module owns no fallback UI and has **no dependency on `PINLockKit`** — any non-`.success` result is your cue to present a fallback (e.g. the `PINLockKit` screen).
+
+> **Host requirement:** add an `NSFaceIDUsageDescription` string to your app's `Info.plist`, or Face ID evaluation crashes at runtime.
+
+```swift
+import BiometricLockKit
+
+let biometrics = BiometricService()   // defaults: LAContext + Keychain baseline
+
+switch await biometrics.unlock(reason: "Unlock your journal") {
+case .success:
+    openApp()
+
+case .biometryChanged:
+    // Enrolled biometrics changed since we last trusted this device.
+    if presentPINScreenAndVerify() {          // your PINLockKit UI
+        biometrics.acceptCurrentBiometry()    // re-baseline to the new set
+        openApp()
+    }
+
+case .fallback, .lockout, .failed, .unavailable, .canceled:
+    presentPINScreen()                        // your PINLockKit UI
+}
+```
+
+Pairs with `PINLockKit`: treat biometrics as the fast path and the PIN as the always-present fallback (iOS *requires* a non-biometric path — it locks biometry after repeated failures). A ready-to-adapt composition of the two lives in [`Examples/AppLockCoordinator.swift`](Examples/AppLockCoordinator.swift) — kept out of the build so `BiometricLockKit` stays dependency-free. For the details behind `.biometryChanged` (and why an iOS upgrade can trigger it), see [`docs/biometric-domain-state.md`](docs/biometric-domain-state.md).
+
 ### ContentSafetyKit
 
 Keyword-based crisis detection (`CrisisDetector`) and boundary-violation detection (`BoundaryDetector`) for assistant replies that must avoid diagnostic/prescriptive language. Both ship with sensible defaults and accept custom pattern lists.
@@ -181,7 +212,7 @@ Add via Swift Package Manager:
 .package(url: "https://github.com/AnubisRooster/OnDeviceKit", from: "0.1.0")
 ```
 
-Then depend on whichever product(s) you need — `BYOKLLMKit`, `VoiceLoopKit`, `PINLockKit`, `ContentSafetyKit`, `GraphKit`, `AgentRouteKit`, `GraphViewKit`, `LocalLLMKit`, `ModelCatalogKit` — in your target.
+Then depend on whichever product(s) you need — `BYOKLLMKit`, `VoiceLoopKit`, `PINLockKit`, `BiometricLockKit`, `ContentSafetyKit`, `GraphKit`, `AgentRouteKit`, `GraphViewKit`, `LocalLLMKit`, `ModelCatalogKit` — in your target.
 
 ### Repository structure
 
